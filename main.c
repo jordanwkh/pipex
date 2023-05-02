@@ -6,7 +6,7 @@
 /*   By: jhoekstr <jhoekstr@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2023/04/19 16:02:57 by jhoekstr      #+#    #+#                 */
-/*   Updated: 2023/05/02 16:43:54 by jhoekstr      ########   odam.nl         */
+/*   Updated: 2023/05/02 17:07:29 by jhoekstr      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@ void	executing(char *cmand, char **envp)
 	char	*new_path;
 
 	args = ft_split(cmand, ' ');
+	if (args == 0)
+		error_msg("Malloc failed");
 	path = args[0];
-	if (strchr(cmand, '/'))
+	if (strchr(path, '/'))
 	{
 		run_if_access(path, args, envp);
 	}
@@ -57,7 +59,7 @@ void	child_two(char **argv, char **envp, int *pipe_fd)
 {
 	int	file_fd;
 
-	file_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC);
+	file_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (file_fd == -1)
 		error_msg("Can't open file");
 	close(pipe_fd[1]);
@@ -89,6 +91,6 @@ int	main(int argc, char **argv, char **envp)
 	waitpid(pid_1, &w_status, 0);
 	waitpid(pid_2, &w_status, 0);
 	if (WIFEXITED(w_status))
-		exit(WIFEXITED(w_status));
+		exit(WEXITSTATUS(w_status));
 	exit(EXIT_FAILURE);
 }
